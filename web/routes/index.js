@@ -63,5 +63,46 @@ router.get('/game/content/:gameid',function(req, res, next){
 	})
 })
 
+router.get('/admin/login',function(req, res, next){
+	res.render('./admin/login',{
+		message:""
+	});
+})
+
+router.post('/admin/login',function(req, res, next){
+	console.log('post : /admin/login');
+	console.log(global.dbHandler.getModel);
+	var s_username = global.dbHandler.getModel('user')
+	console.log(s_suername);
+	console.log('==========');
+	var c_username = req.body.username
+	var c_password = req.body.password
+	
+
+
+	s_username.findOnce({"username":c_username},function(err,doc){
+		if(err){
+			//res.send(500)
+			console.log(err);
+		}else if(!doc){
+			req.session.error = '用户名不存在'
+			res.send(404)
+		}else{
+			if(c_password!=doc.password){
+				req.session.error = "密码错误"
+				res.send(404)
+			}else{
+				req.session.user=doc
+				res.send(200)
+			}
+		}
+	})
+	
+})
+
+router.get('/admin/index',function(req, res, next){
+	res.render('admin/index',{})
+})
+
 
 module.exports = router;
